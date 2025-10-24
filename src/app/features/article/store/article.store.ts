@@ -19,19 +19,23 @@ import { Articles } from '../../../core/services/articles';
 import { computed, inject } from '@angular/core';
 import { tapResponse } from '@ngrx/operators';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ArticleModel } from '../../../core/models/article.model';
+import { ArticleSingleSlugModel } from '../../../core/models/article.model';
+import { CommentModel } from '../../../core/models/comments.model';
 
 interface ArticleStoreModel {
-  article: ArticleModel | null;
+  article: ArticleSingleSlugModel | null;
+  comments: CommentModel[];
 }
 
 const initialState: ArticleStoreModel = {
   article: null,
+  comments: [],
 };
 
 export const ArticleStore = signalStore(
   withState(initialState),
   withRequestState({ prefix: 'article' }),
+  withRequestState({ prefix: 'articleComments' }),
   withRouteParams(({ slug }) => ({ slug })),
   withComputed((store) => ({
     vm: computed(() => ({
@@ -53,10 +57,27 @@ export const ArticleStore = signalStore(
         )
       )
     ),
+
+    getArticleComments: rxMethod<void>(
+      pipe(
+        tap(() => patchState(store, setPending('articleComments'))),
+        switchMap(() =>
+          articles.getArticleComments(store.slug() as string).pipe(
+            tapResponse({
+              next: (comments) =>
+                patchState(store, { comments: comments.comments }, setFulfilled('articleComments')),
+              error: (error: HttpErrorResponse) =>
+                patchState(store, setError('articleComments', error)),
+            })
+          )
+        )
+      )
+    ),
   })),
   withHooks({
     onInit(store) {
       store.getArticle();
+      store.getArticleComments();
     },
   })
 );

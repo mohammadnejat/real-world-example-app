@@ -40,7 +40,7 @@
         <h2 id="introducing-ionic">Introducing {{ article.title }}.</h2>
         <p>{{ article.body }}</p>
         <ul class="tag-list">
-          @for (tag of article.slug; track $index) {
+          @for (tag of article.tagList; track $index) {
           <li class="tag-default tag-pill tag-outline">{{ tag }}</li>
           }
         </ul>
@@ -51,32 +51,30 @@
 
     <div class="article-actions">
       <div class="article-meta">
-        <a href="profile.html"><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
+        <a href="/profile/eric-simons"><img [src]="article.author.image" /></a>
         <div class="info">
-          <a href="" class="author">Eric Simons</a>
-          <span class="date">January 20th</span>
+          <a href="/profile/eric-simons" class="author">{{ article.author.username }}</a>
+          <span class="date">{{ article.createdAt | date }}</span>
         </div>
 
         <button class="btn btn-sm btn-outline-secondary">
           <i class="ion-plus-round"></i>
           &nbsp; Follow Eric Simons
         </button>
-        &nbsp;
-        <button class="btn btn-sm btn-outline-primary">
-          <i class="ion-heart"></i>
-          &nbsp; Favorite Article <span class="counter">(29)</span>
-        </button>
+        &nbsp; @if(isUserLoggedIn) {
         <button class="btn btn-sm btn-outline-secondary">
           <i class="ion-edit"></i> Edit Article
         </button>
         <button class="btn btn-sm btn-outline-danger">
           <i class="ion-trash-a"></i> Delete Article
         </button>
+        }
       </div>
     </div>
 
     <div class="row">
       <div class="col-xs-12 col-md-8 offset-md-2">
+        @if(isUserLoggedIn) {
         <form class="card comment-form">
           <div class="card-block">
             <textarea class="form-control" placeholder="Write a comment..." rows="3"></textarea>
@@ -86,41 +84,32 @@
             <button class="btn btn-sm btn-primary">Post Comment</button>
           </div>
         </form>
+        } @else {
+        <p>
+          <a href="#/login" class="" aria-label="login"> Sign in </a> or
+          <a href="#/register" class="" aria-label="register"> sign up </a> to add comments on this
+          article.
+        </p>
 
+        } @for (comment of vm().comments(); track $index) {
         <div class="card">
           <div class="card-block">
             <p class="card-text">
-              With supporting text below as a natural lead-in to additional content.
+              {{ comment.body }}
             </p>
           </div>
           <div class="card-footer">
-            <a href="/profile/author" class="comment-author">
-              <img src="http://i.imgur.com/Qr71crq.jpg" class="comment-author-img" />
+            <a [routerLink]="`/profile${comment.author.username}`" class="comment-author">
+              <img [src]="comment.author.image" class="comment-author-img" />
             </a>
             &nbsp;
-            <a href="/profile/jacob-schmidt" class="comment-author">Jacob Schmidt</a>
-            <span class="date-posted">Dec 29th</span>
+            <a [routerLink]="`/profile/${comment.author.username}`" class="comment-author"
+              >Jacob Schmidt</a
+            >
+            <span class="date-posted">{{ comment.updatedAt | date }}</span>
           </div>
         </div>
-
-        <div class="card">
-          <div class="card-block">
-            <p class="card-text">
-              With supporting text below as a natural lead-in to additional content.
-            </p>
-          </div>
-          <div class="card-footer">
-            <a href="/profile/author" class="comment-author">
-              <img src="http://i.imgur.com/Qr71crq.jpg" class="comment-author-img" />
-            </a>
-            &nbsp;
-            <a href="/profile/jacob-schmidt" class="comment-author">Jacob Schmidt</a>
-            <span class="date-posted">Dec 29th</span>
-            <span class="mod-options">
-              <i class="ion-trash-a"></i>
-            </span>
-          </div>
-        </div>
+        }
       </div>
     </div>
   </div>
