@@ -3,6 +3,10 @@ export interface LoginPayloadModel {
   password: string;
 }
 export interface RegisterPayloadModel {
+  user: UserRegisterModel;
+}
+
+export interface UserRegisterModel {
   username: string;
   email: string;
   password: string;

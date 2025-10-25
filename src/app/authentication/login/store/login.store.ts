@@ -10,7 +10,7 @@ import { setFulfilled, setPending, withRequestState } from '../../../core/states
 import { Authentication } from '../../../core/services/authentication';
 import { LoginForm } from '../login.form';
 
-export const AuthenticationStore = signalStore(
+export const LoginStore = signalStore(
   withState([]),
   withRequestState({ prefix: 'login' }),
   withComputed((store) => ({})),
