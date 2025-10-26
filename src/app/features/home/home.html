@@ -7,16 +7,13 @@
     </div>
   </div>
 
-  
   <div class="container page">
     <span>Total articles: {{ vm.articlesCount() }}</span>
     <div class="row">
       <div class="col-md-9">
         <div class="feed-toggle">
           <ul class="nav nav-pills outline-active">
-            <li class="nav-item">
-              <a class="nav-link" href="">Your Feed</a>
-            </li>
+            <li class="nav-item"><a class="nav-link" href="">Your Feed</a>app-article-list</li>
             <li class="nav-item">
               <a class="nav-link active" href="">Global Feed</a>
             </li>
@@ -39,7 +36,12 @@
               }}</a>
               <span class="date">{{ article.createdAt | date }}</span>
             </div>
-            <button class="btn btn-outline-primary btn-sm pull-xs-right" (click)="favoriteArticle(article.slug)">
+            <button
+              class="btn pull-xs-right btn-sm"
+              [class.btn-primary]="article.favorited"
+              [class.btn-outline-primary]="!article.favorited"
+              (click)="favoriteArticle(article)"
+            >
               <i class="ion-heart"></i> {{ article.favoritesCount }}
             </button>
           </div>
@@ -72,7 +74,7 @@
 
           <div class="tag-list">
             @for (tag of vm.popularTags(); track $index) {
-              <a href="" class="tag-pill tag-default">{{tag}}</a>
+            <a href="" class="tag-pill tag-default">{{ tag }}</a>
             }
           </div>
         </div>

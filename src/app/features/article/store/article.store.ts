@@ -20,7 +20,9 @@ import { computed, inject } from '@angular/core';
 import { tapResponse } from '@ngrx/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ArticleSingleSlugModel } from '../../../core/models/article.model';
-import { CommentModel } from '../../../core/models/comments.model';
+import { CommentModel, CommentPayloadModel } from '../../../core/models/comments.model';
+import { AuthenticationStore } from '../../../authentication/authentication.store';
+import { ArticleForm } from '../article.form';
 
 interface ArticleStoreModel {
   article: ArticleSingleSlugModel | null;
@@ -37,12 +39,18 @@ export const ArticleStore = signalStore(
   withRequestState({ prefix: 'article' }),
   withRequestState({ prefix: 'articleComments' }),
   withRouteParams(({ slug }) => ({ slug })),
-  withComputed((store) => ({
+  withComputed((store, authenticationStore = inject(AuthenticationStore)) => ({
     vm: computed(() => ({
+      isUserArticle: computed(
+        () => store.article()?.author?.username === authenticationStore.user()?.username
+      ),
+      isUserComment: computed(
+        () => store.comments()?.find((comment) => comment.author.username === authenticationStore.user()?.username)
+      ),
       ...store,
     })),
   })),
-  withMethods((store, articles = inject(Articles)) => ({
+  withMethods((store, articles = inject(Articles), articleForm = inject(ArticleForm)) => ({
     getArticle: rxMethod<void>(
       pipe(
         tap(() => patchState(store, setPending('article'))),
@@ -63,6 +71,44 @@ export const ArticleStore = signalStore(
         tap(() => patchState(store, setPending('articleComments'))),
         switchMap(() =>
           articles.getArticleComments(store.slug() as string).pipe(
+            tapResponse({
+              next: (comments) =>
+                patchState(store, { comments: comments.comments }, setFulfilled('articleComments')),
+              error: (error: HttpErrorResponse) =>
+                patchState(store, setError('articleComments', error)),
+            })
+          )
+        )
+      )
+    ),
+
+    addComment: rxMethod<void>(
+      pipe(
+        tap(() => patchState(store, setPending('articleComments'))),
+        switchMap(() => {
+          
+          const payload: CommentPayloadModel = {
+            comment: {
+              body:articleForm.form.value.comment
+            },
+          };
+          return articles.addComment(store.slug(), payload).pipe(
+            tapResponse({
+              next: (comments) =>
+                patchState(store, { comments: comments.comments }, setFulfilled('articleComments')),
+              error: (error: HttpErrorResponse) =>
+                patchState(store, setError('articleComments', error)),
+            })
+          );
+        })
+      )
+    ),
+
+    deleteComment: rxMethod<number>(
+      pipe(
+        tap(() => patchState(store, setPending('articleComments'))),
+        switchMap((id) =>
+          articles.deleteComment(store.slug(), id).pipe(
             tapResponse({
               next: (comments) =>
                 patchState(store, { comments: comments.comments }, setFulfilled('articleComments')),

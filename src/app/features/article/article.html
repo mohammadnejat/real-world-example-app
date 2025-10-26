@@ -1,25 +1,25 @@
-@if(vm().article(); as article) {
+@if(vm(); as vm) {
 <div class="article-page">
   <div class="banner">
     <div class="container">
-      <h1>{{ article.title }}</h1>
+      <h1>{{ vm.article()?.title }}</h1>
 
       <div class="article-meta">
-        <a href="/profile/eric-simons"><img [src]="article.author.image" /></a>
+        <a href="/profile/eric-simons"><img [src]="vm.article()?.author?.image" /></a>
         <div class="info">
-          <a href="/profile/eric-simons" class="author">{{ article.author.username }}</a>
-          <span class="date">{{ article.createdAt | date }}</span>
+          <a href="/profile/eric-simons" class="author">{{ vm.article()?.author?.username }}</a>
+          <span class="date">{{ vm.article()?.createdAt | date }}</span>
         </div>
         <button class="btn btn-sm btn-outline-secondary">
           <i class="ion-plus-round"></i>
-          &nbsp; Follow {{ article.author.username }}
+          &nbsp; Follow {{ vm.article()?.author?.username }}
         </button>
         &nbsp;&nbsp;
         <button class="btn btn-sm btn-outline-primary">
           <i class="ion-heart"></i>
-          &nbsp; Favorite Post <span class="counter"> {{ article.favoritesCount }}</span>
+          &nbsp; Favorite Post <span class="counter"> {{ vm.article()?.favoritesCount }}</span>
         </button>
-        @let isUserLoggedIn = true; @if(isUserLoggedIn) {
+        @if(isAuthenticated() && vm.isUserArticle()) {
         <button class="btn btn-sm btn-outline-secondary">
           <i class="ion-edit"></i> Edit Article
         </button>
@@ -35,12 +35,12 @@
     <div class="row article-content">
       <div class="col-md-12">
         <p>
-          {{ article.description }}
+          {{ vm.article()?.description }}
         </p>
-        <h2 id="introducing-ionic">Introducing {{ article.title }}.</h2>
-        <p>{{ article.body }}</p>
+        <h2 id="introducing-ionic">Introducing {{ vm.article()?.title }}.</h2>
+        <p>{{ vm.article()?.body }}</p>
         <ul class="tag-list">
-          @for (tag of article.tagList; track $index) {
+          @for (tag of vm.article()?.tagList; track $index) {
           <li class="tag-default tag-pill tag-outline">{{ tag }}</li>
           }
         </ul>
@@ -51,17 +51,17 @@
 
     <div class="article-actions">
       <div class="article-meta">
-        <a href="/profile/eric-simons"><img [src]="article.author.image" /></a>
+        <a href="/profile/eric-simons"><img [src]="vm.article()?.author?.image" /></a>
         <div class="info">
-          <a href="/profile/eric-simons" class="author">{{ article.author.username }}</a>
-          <span class="date">{{ article.createdAt | date }}</span>
+          <a href="/profile/eric-simons" class="author">{{ vm.article()?.author?.username }}</a>
+          <span class="date">{{ vm.article()?.createdAt | date }}</span>
         </div>
 
         <button class="btn btn-sm btn-outline-secondary">
           <i class="ion-plus-round"></i>
           &nbsp; Follow Eric Simons
         </button>
-        &nbsp; @if(isUserLoggedIn) {
+        &nbsp; @if(isAuthenticated() && vm.isUserArticle()) {
         <button class="btn btn-sm btn-outline-secondary">
           <i class="ion-edit"></i> Edit Article
         </button>
@@ -74,16 +74,27 @@
 
     <div class="row">
       <div class="col-xs-12 col-md-8 offset-md-2">
-        @if(isUserLoggedIn) {
-        <form class="card comment-form">
+        @if(isAuthenticated()) {
+        <div class="card comment-form">
           <div class="card-block">
-            <textarea class="form-control" placeholder="Write a comment..." rows="3"></textarea>
+            <textarea
+              [formControl]="commentForm"
+              class="form-control"
+              placeholder="Write a comment..."
+              rows="3"
+            ></textarea>
           </div>
           <div class="card-footer">
-            <img src="http://i.imgur.com/Qr71crq.jpg" class="comment-author-img" />
-            <button class="btn btn-sm btn-primary">Post Comment</button>
+            <img [src]="userImage()" class="comment-author-img" />
+            <button
+              class="btn btn-sm btn-primary"
+              (click)="addComment()"
+              [disabled]="!commentForm.value"
+            >
+              Post Comment
+            </button>
           </div>
-        </form>
+        </div>
         } @else {
         <p>
           <a href="#/login" class="" aria-label="login"> Sign in </a> or
@@ -91,7 +102,7 @@
           article.
         </p>
 
-        } @for (comment of vm().comments(); track $index) {
+        } @for (comment of vm.comments(); track $index) {
         <div class="card">
           <div class="card-block">
             <p class="card-text">
@@ -107,6 +118,12 @@
               >Jacob Schmidt</a
             >
             <span class="date-posted">{{ comment.updatedAt | date }}</span>
+
+           @if(isAuthenticated() && vm.isUserComment()) {
+             <button class="btn btn-sm btn-outline-danger ">
+              <i class="ion-trash-a"></i> Delete Comment
+            </button>
+           }
           </div>
         </div>
         }

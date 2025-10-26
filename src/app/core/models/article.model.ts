@@ -1,5 +1,5 @@
 export interface ArticlesModel {
-  articles: ArticleModel[];
+  articles: ArticleSingleSlugModel[];
   articlesCount: number;
 }
 

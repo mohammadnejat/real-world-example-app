@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { ArticleModel, ArticleSlugModel, ArticlesModel } from '../models/article.model';
 import { Observable } from 'rxjs';
-import { CommentsModel } from '../models/comments.model';
+import { CommentPayloadModel, CommentsModel } from '../models/comments.model';
 
 @Injectable()
 export class Articles {
@@ -30,5 +30,15 @@ export class Articles {
 
   unfavoriteArticle(slug: string): Observable<ArticleSlugModel> {
     return this._http.delete<ArticleSlugModel>(`${this.#articlesUrl}/${slug}/favorite`);
+  }
+
+  addComment(slug: string, comment: CommentPayloadModel): Observable<CommentsModel> {
+    return this._http.post<CommentsModel>(`${this.#articlesUrl}/${slug}/comments`, {
+      comment,
+    });
+  }
+
+  deleteComment(slug:string,id:number): Observable<CommentsModel> {
+    return this._http.delete<CommentsModel>(`${this.#articlesUrl}/${slug}/comments/${id}`);
   }
 }

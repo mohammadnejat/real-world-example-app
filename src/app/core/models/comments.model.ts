@@ -11,3 +11,9 @@ export interface CommentModel {
   body: string;
   author: AuthorModel;
 }
+
+export interface CommentPayloadModel {
+  comment: {
+    body: string;
+  };
+}

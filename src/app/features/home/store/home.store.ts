@@ -7,7 +7,7 @@ import {
   withState,
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap, tap } from 'rxjs';
+import { of, pipe, switchMap, tap } from 'rxjs';
 import {
   setError,
   setFulfilled,
@@ -17,11 +17,11 @@ import {
 import { computed, inject } from '@angular/core';
 import { Articles } from '../../../core/services/articles';
 import { tapResponse } from '@ngrx/operators';
-import { ArticleModel, ArticlesModel } from '../../../core/models/article.model';
+import { ArticleSingleSlugModel, ArticlesModel } from '../../../core/models/article.model';
 import { HttpErrorResponse } from '@angular/common/http';
 
 interface HomeStoreModel {
-  articles: ArticleModel[];
+  articles: ArticleSingleSlugModel[];
   articlesCount: number;
 }
 
@@ -65,13 +65,43 @@ export const HomeStore = signalStore(
     ),
     favoriteArticle: rxMethod<string>(
       pipe(
-        tap((slug) => patchState(store, setPending('articles'))),
+        tap(() => patchState(store, setPending('articles'))),
         switchMap((slug) =>
           articles.favoriteArticle(slug).pipe(
             tapResponse({
               next: (article) => {
-                console.log(article);
-                
+                patchState(
+                  store,
+                  {
+                    articles: store.articles().map((art) => {
+                      return art.slug === article.article.slug ? article.article : art;
+                    }),
+                  },
+                  setFulfilled('articles')
+                );
+              },
+              error: (error: HttpErrorResponse) => setError('articles', error),
+            })
+          )
+        )
+      )
+    ),
+    unfavoriteArticle: rxMethod<string>(
+      pipe(
+        tap(() => patchState(store, setPending('articles'))),
+        switchMap((slug) =>
+          articles.unfavoriteArticle(slug).pipe(
+            tapResponse({
+              next: (article) => {
+                patchState(
+                  store,
+                  {
+                    articles: store.articles().map((art) => {
+                      return art.slug === article.article.slug ? article.article : art;
+                    }),
+                  },
+                  setFulfilled('articles')
+                );
               },
               error: (error: HttpErrorResponse) => setError('articles', error),
             })
