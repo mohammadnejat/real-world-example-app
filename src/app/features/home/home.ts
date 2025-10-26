@@ -14,4 +14,9 @@ import { RouterLink } from "@angular/router";
 export default class Home {
   #article = inject(HomeStore);
   vm = this.#article.vm;
+
+  favoriteArticle(slug: string) {
+    this.#article.favoriteArticle(slug);
+
+  }
 }

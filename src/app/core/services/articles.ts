@@ -23,4 +23,12 @@ export class Articles {
   getArticleComments(slug: string): Observable<CommentsModel> {
     return this._http.get<CommentsModel>(`${this.#articlesUrl}/${slug}/comments`);
   }
+
+  favoriteArticle(slug: string): Observable<ArticleSlugModel> {
+    return this._http.post<ArticleSlugModel>(`${this.#articlesUrl}/${slug}/favorite`,'');
+  }
+
+  unfavoriteArticle(slug: string): Observable<ArticleSlugModel> {
+    return this._http.delete<ArticleSlugModel>(`${this.#articlesUrl}/${slug}/favorite`);
+  }
 }

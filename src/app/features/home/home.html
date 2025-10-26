@@ -39,7 +39,7 @@
               }}</a>
               <span class="date">{{ article.createdAt | date }}</span>
             </div>
-            <button class="btn btn-outline-primary btn-sm pull-xs-right">
+            <button class="btn btn-outline-primary btn-sm pull-xs-right" (click)="favoriteArticle(article.slug)">
               <i class="ion-heart"></i> {{ article.favoritesCount }}
             </button>
           </div>

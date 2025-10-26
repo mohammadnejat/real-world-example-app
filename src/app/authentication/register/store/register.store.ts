@@ -18,9 +18,7 @@ import { AuthenticationStore } from '../../authentication.store';
 import { Router } from '@angular/router';
 
 export const RegisterStore = signalStore(
-  withState([]),
   withRequestState({ prefix: 'register' }),
-  withComputed((store) => ({})),
   withMethods(
     (
       store,

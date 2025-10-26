@@ -63,6 +63,22 @@ export const HomeStore = signalStore(
         )
       )
     ),
+    favoriteArticle: rxMethod<string>(
+      pipe(
+        tap((slug) => patchState(store, setPending('articles'))),
+        switchMap((slug) =>
+          articles.favoriteArticle(slug).pipe(
+            tapResponse({
+              next: (article) => {
+                console.log(article);
+                
+              },
+              error: (error: HttpErrorResponse) => setError('articles', error),
+            })
+          )
+        )
+      )
+    ),
   })),
   withHooks({
     onInit(store) {

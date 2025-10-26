@@ -1,4 +1,8 @@
 export interface LoginPayloadModel {
+  user: LoginModel;
+}
+
+export interface LoginModel {
   email: string;
   password: string;
 }
