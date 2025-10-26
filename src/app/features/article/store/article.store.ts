@@ -23,6 +23,7 @@ import { ArticleSingleSlugModel } from '../../../core/models/article.model';
 import { CommentModel, CommentPayloadModel } from '../../../core/models/comments.model';
 import { AuthenticationStore } from '../../../authentication/authentication.store';
 import { ArticleForm } from '../article.form';
+import { Profiles } from '../../../core/services/profiles';
 
 interface ArticleStoreModel {
   article: ArticleSingleSlugModel | null;
@@ -44,13 +45,15 @@ export const ArticleStore = signalStore(
       isUserArticle: computed(
         () => store.article()?.author?.username === authenticationStore.user()?.username
       ),
-      isUserComment: computed(
-        () => store.comments()?.find((comment) => comment.author.username === authenticationStore.user()?.username)
+      isUserComment: computed(() =>
+        store
+          .comments()
+          ?.find((comment) => comment.author.username === authenticationStore.user()?.username)
       ),
       ...store,
     })),
   })),
-  withMethods((store, articles = inject(Articles), articleForm = inject(ArticleForm)) => ({
+  withMethods((store, articles = inject(Articles), articleForm = inject(ArticleForm),profiles = inject(Profiles)) => ({
     getArticle: rxMethod<void>(
       pipe(
         tap(() => patchState(store, setPending('article'))),
@@ -86,10 +89,9 @@ export const ArticleStore = signalStore(
       pipe(
         tap(() => patchState(store, setPending('articleComments'))),
         switchMap(() => {
-          
           const payload: CommentPayloadModel = {
             comment: {
-              body:articleForm.form.value.comment
+              body: articleForm.form.value.comment,
             },
           };
           return articles.addComment(store.slug(), payload).pipe(
@@ -114,6 +116,77 @@ export const ArticleStore = signalStore(
                 patchState(store, { comments: comments.comments }, setFulfilled('articleComments')),
               error: (error: HttpErrorResponse) =>
                 patchState(store, setError('articleComments', error)),
+            })
+          )
+        )
+      )
+    ),
+
+    favoriteArticle: rxMethod<void>(
+      pipe(
+        switchMap(() =>
+          articles.favoriteArticle(store.slug()).pipe(
+            tapResponse({
+              next: (article) => {
+                patchState(store, {
+                  article:
+                    store.article()?.slug === article.article.slug
+                      ? article.article
+                      : store.article(),
+                });
+              },
+              error: (error: HttpErrorResponse) => {},
+            })
+          )
+        )
+      )
+    ),
+
+    unfavoriteArticle: rxMethod<void>(
+      pipe(
+        switchMap(() =>
+          articles.unfavoriteArticle(store.slug()).pipe(
+            tapResponse({
+              next: (article) => {
+                patchState(store, {
+                  article:
+                    store.article()?.slug === article.article.slug
+                      ? article.article
+                      : store.article(),
+                });
+              },
+              error: (error: HttpErrorResponse) => {},
+            })
+          )
+        )
+      )
+    ),
+
+    followUser: rxMethod<string>(
+      pipe(
+        switchMap((username) =>
+          profiles.followUser(username).pipe(
+            tapResponse({
+              next: (user) => {
+                console.log(user);
+                
+              },
+              error: (error: HttpErrorResponse) => {},
+            })
+          )
+        )
+      )
+    ),
+
+    unflolowUser: rxMethod<string>(
+      pipe(
+        switchMap((username) =>
+          profiles.followUser(username).pipe(
+            tapResponse({
+              next: (user) => {
+                console.log(user);
+              },
+              error: (error: HttpErrorResponse) => {},
             })
           )
         )

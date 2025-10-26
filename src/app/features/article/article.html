@@ -10,14 +10,24 @@
           <a href="/profile/eric-simons" class="author">{{ vm.article()?.author?.username }}</a>
           <span class="date">{{ vm.article()?.createdAt | date }}</span>
         </div>
-        <button class="btn btn-sm btn-outline-secondary">
+        <button
+          class="btn btn-sm "
+          [class.btn-primary]="vm.article()?.author?.following"
+          [class.btn-outline-primary]="!vm.article()?.author?.following"
+          (click)="followUser(vm.article()?.author?.username!)"
+        >
           <i class="ion-plus-round"></i>
           &nbsp; Follow {{ vm.article()?.author?.username }}
         </button>
         &nbsp;&nbsp;
-        <button class="btn btn-sm btn-outline-primary">
+        <button
+          class="btn btn-sm"
+          [class.btn-primary]="vm.article()?.favorited"
+          [class.btn-outline-primary]="!vm.article()?.favorited"
+          (click)="toggleFavorite()"
+        >
           <i class="ion-heart"></i>
-          &nbsp; Favorite Post <span class="counter"> {{ vm.article()?.favoritesCount }}</span>
+          &nbsp; Favorite Article <span class="counter">({{ vm.article()?.favoritesCount }})</span>
         </button>
         @if(isAuthenticated() && vm.isUserArticle()) {
         <button class="btn btn-sm btn-outline-secondary">
@@ -119,11 +129,11 @@
             >
             <span class="date-posted">{{ comment.updatedAt | date }}</span>
 
-           @if(isAuthenticated() && vm.isUserComment()) {
-             <button class="btn btn-sm btn-outline-danger ">
+            @if(isAuthenticated() && vm.isUserComment()) {
+            <button class="btn btn-sm btn-outline-danger">
               <i class="ion-trash-a"></i> Delete Comment
             </button>
-           }
+            }
           </div>
         </div>
         }

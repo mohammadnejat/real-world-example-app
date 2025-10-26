@@ -15,11 +15,11 @@ import { ReactiveFormsModule } from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Article {
-  #article = inject(ArticleStore);
+  #articleStore = inject(ArticleStore);
   #authenticationStore = inject(AuthenticationStore);
   #form = inject(ArticleForm);
 
-  readonly vm = this.#article.vm;
+  readonly vm = this.#articleStore.vm;
   readonly commentForm = this.#form.form;
 
   readonly isAuthenticated = computed(() => this.#authenticationStore.user());
@@ -28,10 +28,22 @@ export default class Article {
 
 
   addComment() {
-    this.#article.addComment();
+    this.#articleStore.addComment();
   }
 
   deleteComment(id:number) {
-    this.#article.deleteComment(id);
+    this.#articleStore.deleteComment(id);
+  }
+
+  toggleFavorite() {
+    if(this.vm().article()?.favorited) {
+      this.#articleStore.unfavoriteArticle();
+    } else {
+      this.#articleStore.favoriteArticle();
+    }
+  }
+
+  followUser(username: string) {
+    this.#articleStore.followUser(username);
   }
 }
