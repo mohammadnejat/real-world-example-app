@@ -21,7 +21,7 @@ export function ErrorHandlerInterceptor(
 
   
 
-  const authRequest = token ? req.clone({ setHeaders: { Authorization: `Token token_e2d4f17085b04a35c655c2f5148d6b7d`,'content-type': 'application/json',accept: '*/*' }  }) : req;
+  const authRequest = token ? req.clone({ setHeaders: { Authorization: `Token ${token}`,'content-type': 'application/json',accept: '*/*' }  }) : req;
 
   return next(authRequest).pipe(
     tap({
