@@ -3,6 +3,9 @@ import { AuthorModel } from './article.model';
 export interface CommentsModel {
   comments: CommentModel[];
 }
+export interface CommentModel {
+  comment: CommentModel;
+}
 
 export interface CommentModel {
   id: number;

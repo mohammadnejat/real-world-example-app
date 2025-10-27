@@ -6,9 +6,9 @@ export class RegisterForm {
   #fb = inject(FormBuilder);
 
   #form = this.#fb.nonNullable.group({
-    username: ['', Validators.required],
+    username: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required],
+    password: ['', [Validators.required]],
   });
 
   get registerForm(): FormGroup {

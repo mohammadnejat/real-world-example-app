@@ -5,9 +5,10 @@ import { Articles } from '../../core/services/articles';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ArticleSingleSlugModel } from '../../core/models/article.model';
+import { MatTabGroup, MatTab, MatTabsModule } from '@angular/material/tabs';
 @Component({
   selector: 'app-home',
-  imports: [MatProgressSpinnerModule, DatePipe, RouterLink],
+  imports: [MatProgressSpinnerModule, DatePipe, RouterLink,MatTabsModule],
   providers: [HomeStore, Articles],
   templateUrl: './home.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

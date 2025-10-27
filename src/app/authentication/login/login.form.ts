@@ -6,8 +6,8 @@ export class LoginForm {
   #fb = inject(FormBuilder);
 
   #form = this.#fb.nonNullable.group({
-    email: ['', Validators.required, Validators.email],
-    password: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required]],
   });
 
   get loginForm(): FormGroup {

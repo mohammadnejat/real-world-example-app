@@ -6,11 +6,12 @@ import { RouterLink } from '@angular/router';
 import { AuthenticationStore } from '../../authentication/authentication.store';
 import { ArticleForm } from './article.form';
 import { ReactiveFormsModule } from '@angular/forms';
+import { Profiles } from '../../core/services/profiles';
 
 @Component({
   selector: 'app-article',
   imports: [DatePipe, RouterLink,ReactiveFormsModule],
-  providers: [ArticleStore, Articles,ArticleForm],
+  providers: [ArticleStore, Articles,ArticleForm,Profiles],
   templateUrl: './article.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

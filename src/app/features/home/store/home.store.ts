@@ -19,6 +19,8 @@ import { Articles } from '../../../core/services/articles';
 import { tapResponse } from '@ngrx/operators';
 import { ArticleSingleSlugModel, ArticlesModel } from '../../../core/models/article.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthenticationStore } from '../../../authentication/authentication.store';
+
 
 interface HomeStoreModel {
   articles: ArticleSingleSlugModel[];
@@ -33,7 +35,7 @@ const initialState: HomeStoreModel = {
 export const HomeStore = signalStore(
   withState(initialState),
   withRequestState({ prefix: 'articles' }),
-  withComputed((store) => ({
+  withComputed((store,authenticationStore = inject(AuthenticationStore)) => ({
     vm: computed(() => ({
       popularTags: computed(() => {
         const tags = store
@@ -42,6 +44,10 @@ export const HomeStore = signalStore(
           .map((article) => article.tagList)
           .flat();
         return [...new Set(tags)];
+      }),
+
+      myArticles: computed(() => {
+        return store.articles().filter((article) => article.author.username === authenticationStore.user()?.username);
       }),
       ...store,
     })),

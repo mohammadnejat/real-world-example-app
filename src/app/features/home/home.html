@@ -1,5 +1,5 @@
 @if(vm(); as vm) {
-<div class="home-page">
+<div class="home-page h-100">
   <div class="banner">
     <div class="container">
       <h1 class="logo-font">conduit</h1>
@@ -11,52 +11,84 @@
     <span>Total articles: {{ vm.articlesCount() }}</span>
     <div class="row">
       <div class="col-md-9">
-        <div class="feed-toggle">
-          <ul class="nav nav-pills outline-active">
-            <li class="nav-item"><a class="nav-link" href="">Your Feed</a>app-article-list</li>
-            <li class="nav-item">
-              <a class="nav-link active" href="">Global Feed</a>
-            </li>
-          </ul>
-        </div>
-
-        @if(vm.articlesPending()) {
-        <mat-spinner></mat-spinner>
-        }@else if (vm.articlesError()) {
-        <h1>Error</h1>
-        }@else if (vm.articlesFulfilled()) { @for (article of vm.articles()!; track $index) {
-        <div class="article-preview">
-          <div class="article-meta">
-            <a [routerLink]="`/profile/${article.author.username}`"
-              ><img [src]="article.author.image"
-            /></a>
-            <div class="info">
-              <a [routerLink]="`/profile/${article.author.username}`" class="author">{{
-                article.author.username
-              }}</a>
-              <span class="date">{{ article.createdAt | date }}</span>
+        <mat-tab-group>
+          <mat-tab label="Global Feed">
+            @if(vm.articlesPending()) {
+            <mat-spinner></mat-spinner>
+            }@else if (vm.articlesError()) {
+            <h1>Error</h1>
+            }@else if (vm.articlesFulfilled()) { @for (article of vm.articles()!; track $index) {
+            <div class="article-preview">
+              <div class="article-meta">
+                <a [routerLink]="`/profile/${article.author.username}`"
+                  ><img [src]="article.author.image"
+                /></a>
+                <div class="info">
+                  <a [routerLink]="`/profile/${article.author.username}`" class="author">{{
+                    article.author.username
+                  }}</a>
+                  <span class="date">{{ article.createdAt | date }}</span>
+                </div>
+                <button
+                  class="btn pull-xs-right btn-sm"
+                  [class.btn-primary]="article.favorited"
+                  [class.btn-outline-primary]="!article.favorited"
+                  (click)="favoriteArticle(article)"
+                >
+                  <i class="ion-heart"></i> {{ article.favoritesCount }}
+                </button>
+              </div>
+              <a [routerLink]="`/article/${article.slug}`" class="preview-link">
+                <h1>{{ article.title }}</h1>
+                <p>{{ article.description }}</p>
+                <span>Read more...</span>
+                <ul class="tag-list">
+                  @for (tag of article.tagList; track $index) {
+                  <li class="tag-default tag-pill tag-outline">{{ tag }}</li>
+                  }
+                </ul>
+              </a>
             </div>
-            <button
-              class="btn pull-xs-right btn-sm"
-              [class.btn-primary]="article.favorited"
-              [class.btn-outline-primary]="!article.favorited"
-              (click)="favoriteArticle(article)"
-            >
-              <i class="ion-heart"></i> {{ article.favoritesCount }}
-            </button>
-          </div>
-          <a [routerLink]="`/article/${article.slug}`" class="preview-link">
-            <h1>{{ article.title }}</h1>
-            <p>{{ article.description }}</p>
-            <span>Read more...</span>
-            <ul class="tag-list">
-              @for (tag of article.tagList; track $index) {
-              <li class="tag-default tag-pill tag-outline">{{ tag }}</li>
-              }
-            </ul>
-          </a>
-        </div>
-        } }
+            } }
+          </mat-tab>
+          <mat-tab label="Your Feed">
+            @if(vm.myArticles().length) { @for (article of vm.myArticles(); track $index) {
+            <div class="article-preview">
+              <div class="article-meta">
+                <a [routerLink]="`/profile/${article.author.username}`"
+                  ><img [src]="article.author.image"
+                /></a>
+                <div class="info">
+                  <a [routerLink]="`/profile/${article.author.username}`" class="author">{{
+                    article.author.username
+                  }}</a>
+                  <span class="date">{{ article.createdAt | date }}</span>
+                </div>
+                <button
+                  class="btn pull-xs-right btn-sm"
+                  [class.btn-primary]="article.favorited"
+                  [class.btn-outline-primary]="!article.favorited"
+                  (click)="favoriteArticle(article)"
+                >
+                  <i class="ion-heart"></i> {{ article.favoritesCount }}
+                </button>
+              </div>
+              <a [routerLink]="`/article/${article.slug}`" class="preview-link">
+                <h1>{{ article.title }}</h1>
+                <p>{{ article.description }}</p>
+                <span>Read more...</span>
+                <ul class="tag-list">
+                  @for (tag of article.tagList; track $index) {
+                  <li class="tag-default tag-pill tag-outline">{{ tag }}</li>
+                  }
+                </ul>
+              </a>
+            </div>
+            } }@else {
+            <p>you don't have any articles yet ...</p>
+            }
+          </mat-tab>
+        </mat-tab-group>
 
         <!-- <ul class="pagination">
           <li class="page-item active">
