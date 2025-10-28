@@ -3,10 +3,11 @@ import { ProfileStore } from './store/profile.store';
 
 import { Articles } from '../../core/services/articles';
 import { Profiles } from '../../core/services/profiles';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-profile',
-  imports: [],
+  imports: [DatePipe],
   templateUrl: './profile.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ProfileStore,Articles,Profiles],
