@@ -38,3 +38,9 @@ export interface AuthorModel {
   image: string;
   following: boolean;
 }
+
+export interface ArticlePayloadModel {
+  tag?: string;
+  author?: string;
+  favorited?: boolean;
+}

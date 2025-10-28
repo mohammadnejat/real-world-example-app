@@ -23,7 +23,7 @@ export default class Article {
   readonly vm = this.#articleStore.vm;
   readonly commentForm = this.#form.form;
 
-  readonly isAuthenticated = computed(() => this.#authenticationStore.user());
+  readonly userInfo = computed(() => this.#authenticationStore.user());
 
   readonly userImage = computed(() => this.#authenticationStore.user()?.image);
 

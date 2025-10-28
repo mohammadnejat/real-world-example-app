@@ -29,7 +29,7 @@
           <i class="ion-heart"></i>
           &nbsp; Favorite Article <span class="counter">({{ vm.article()?.favoritesCount }})</span>
         </button>
-        @if(isAuthenticated() && vm.isUserArticle()) {
+        @if(userInfo() && vm.isUserArticle()) {
         <button class="btn btn-sm btn-outline-secondary">
           <i class="ion-edit"></i> Edit Article
         </button>
@@ -67,11 +67,14 @@
           <span class="date">{{ vm.article()?.createdAt | date }}</span>
         </div>
 
-        <button class="btn btn-sm btn-outline-secondary">
+        <button class="btn btn-sm "  class="btn btn-sm "
+          [class.btn-primary]="vm.article()?.author?.following"
+          [class.btn-outline-secondary]="!vm.article()?.author?.following"
+          (click)="followUser(vm.article()?.author?.username!)">
           <i class="ion-plus-round"></i>
           &nbsp; Follow Eric Simons
         </button>
-        &nbsp; @if(isAuthenticated() && vm.isUserArticle()) {
+        &nbsp; @if(userInfo() && vm.isUserArticle()) {
         <button class="btn btn-sm btn-outline-secondary">
           <i class="ion-edit"></i> Edit Article
         </button>
@@ -84,7 +87,7 @@
 
     <div class="row">
       <div class="col-xs-12 col-md-8 offset-md-2">
-        @if(isAuthenticated()) {
+        @if(userInfo()) {
         <div class="card comment-form">
           <div class="card-block">
             <textarea
@@ -129,8 +132,8 @@
             >
             <span class="date-posted">{{ comment.updatedAt | date }}</span>
 
-            @if(isAuthenticated() && vm.isUserComment()) {
-            <button class="btn btn-sm btn-outline-danger">
+            @if( userInfo()?.username === comment.author.username) {
+            <button class="btn btn-sm btn-outline-danger" (click)="deleteComment(comment.id)">
               <i class="ion-trash-a"></i> Delete Comment
             </button>
             }

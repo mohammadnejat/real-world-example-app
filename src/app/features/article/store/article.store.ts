@@ -134,9 +134,10 @@ export const ArticleStore = signalStore(
               tapResponse({
                 next: (comments) =>
                  {
+                  const updatedComments = store.comments().filter(comment => comment.id !== id);
                    patchState(
                     store,
-                    { comments: [comments.comment, ...store.comments()] },
+                    { comments: updatedComments },
                     setFulfilled('articleComments')
                   );
                    matSnackbar.open('Comment Deleted', 'Dismiss');

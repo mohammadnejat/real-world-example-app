@@ -20,6 +20,8 @@ export function ErrorHandlerInterceptor(
   const authenticationStore = inject(AuthenticationStore);
 
   const token = authenticationStore.user()?.token;
+  console.log(token);
+  
 
   const authRequest = token
     ? req.clone({
@@ -34,7 +36,10 @@ export function ErrorHandlerInterceptor(
   return next(authRequest).pipe(
     tap({
       error: (err: HttpErrorResponse) => {
-        if ([401].includes(err.status)) router.navigate(['/login']);
+        if ([401].includes(err.status)) {
+          localStorage.clear()
+          router.navigate(['/login'])
+        };
         const errorMessage: string = err.error.errors.body[0];
         matSnackBar.open(errorMessage, 'Dismiss', {
           duration: 5000,

@@ -1,7 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
-import { ArticleModel, ArticleSlugModel, ArticlesModel } from '../models/article.model';
+import {
+  ArticleModel,
+  ArticlePayloadModel,
+  ArticleSlugModel,
+  ArticlesModel,
+} from '../models/article.model';
 import { Observable } from 'rxjs';
 import { CommentModel, CommentPayloadModel, CommentsModel } from '../models/comments.model';
 
@@ -12,8 +17,8 @@ export class Articles {
   #articlesBasePath = 'articles';
   #articlesUrl = `${environment.basePath}/${this.#articlesBasePath}`;
 
-  getArticles(): Observable<ArticlesModel> {
-    return this._http.get<ArticlesModel>(this.#articlesUrl);
+  getArticles(payload?: ArticlePayloadModel): Observable<ArticlesModel> {
+    return this._http.get<ArticlesModel>(`${this.#articlesUrl}`, { params: { ...payload } });
   }
 
   getArticle(slug: string): Observable<ArticleSlugModel> {

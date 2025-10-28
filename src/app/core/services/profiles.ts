@@ -11,6 +11,11 @@ export class Profiles {
   #profileBaseUrl = `/profiles`;
   #profileUrl = `${environment.basePath}/${this.#profileBaseUrl}`;
 
+
+  getUserProfile(username: string): Observable<UserReponseModel> {
+    return this.#http.get<UserReponseModel>(`${this.#profileUrl}/${username}`);
+  }
+
   followUser(username: string): Observable<UserReponseModel> {
     return this.#http.post<UserReponseModel>(`${this.#profileUrl}/${username}/follow`, '');
   }
