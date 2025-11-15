@@ -2,32 +2,50 @@
   <div class="container page">
     <div class="row">
       <div class="col-md-10 offset-md-1 col-xs-12">
-        <ul class="error-messages">
+        <!-- <ul class="error-messages">
           <li>That title is required</li>
-        </ul>
+        </ul> -->
 
-        <form>
+        <form [formGroup]="articleForm">
           <fieldset>
             <fieldset class="form-group">
-              <input type="text" class="form-control form-control-lg" placeholder="Article Title" />
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                placeholder="Article Title"
+                formControlName="title"
+              />
             </fieldset>
             <fieldset class="form-group">
-              <input type="text" class="form-control" placeholder="What's this article about?" />
+              <input
+                type="text"
+                class="form-control"
+                placeholder="What's this article about?"
+                formControlName="description"
+              />
             </fieldset>
             <fieldset class="form-group">
               <textarea
                 class="form-control"
                 rows="8"
                 placeholder="Write your article (in markdown)"
+                formControlName="body"
               ></textarea>
             </fieldset>
             <fieldset class="form-group">
-              <input type="text" class="form-control" placeholder="Enter tags" />
-              <div class="tag-list">
-                <span class="tag-default tag-pill"> <i class="ion-close-round"></i> tag </span>
+              <div class="d-flex">
+                <input type="text" class="form-control" placeholder="Enter tags" #tag/>
+                <button class="btn btn-primary" (click)="addTag(tag.value)">Add Tag</button>
+              </div>
+              <div class="tag-list mt-3">
+                @for(tag of articleForm.get('tagList')?.value; track tag){
+                <span class="tag-default tag-pill">
+                  <i class="ion-close-round"></i> {{ tag }}
+                </span>
+                }
               </div>
             </fieldset>
-            <button class="btn btn-lg pull-xs-right btn-primary" type="button">
+            <button class="btn btn-lg pull-xs-right btn-primary" type="button" (click)="createArticle()">
               Publish Article
             </button>
           </fieldset>

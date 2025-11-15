@@ -6,42 +6,47 @@ import {
   ArticlePayloadModel,
   ArticleSlugModel,
   ArticlesModel,
+  CreateArticlePayloadModel,
 } from '../models/article.model';
 import { Observable } from 'rxjs';
 import { CommentModel, CommentPayloadModel, CommentsModel } from '../models/comments.model';
 
 @Injectable()
 export class Articles {
-  protected readonly _http = inject(HttpClient);
+  #http = inject(HttpClient);
 
   #articlesBasePath = 'articles';
   #articlesUrl = `${environment.basePath}/${this.#articlesBasePath}`;
 
   getArticles(payload?: ArticlePayloadModel): Observable<ArticlesModel> {
-    return this._http.get<ArticlesModel>(`${this.#articlesUrl}`, { params: { ...payload } });
+    return this.#http.get<ArticlesModel>(`${this.#articlesUrl}`, { params: { ...payload } });
   }
 
   getArticle(slug: string): Observable<ArticleSlugModel> {
-    return this._http.get<ArticleSlugModel>(`${this.#articlesUrl}/${slug}`);
+    return this.#http.get<ArticleSlugModel>(`${this.#articlesUrl}/${slug}`);
   }
 
   getArticleComments(slug: string): Observable<CommentsModel> {
-    return this._http.get<CommentsModel>(`${this.#articlesUrl}/${slug}/comments`);
+    return this.#http.get<CommentsModel>(`${this.#articlesUrl}/${slug}/comments`);
   }
 
   favoriteArticle(slug: string): Observable<ArticleSlugModel> {
-    return this._http.post<ArticleSlugModel>(`${this.#articlesUrl}/${slug}/favorite`, '');
+    return this.#http.post<ArticleSlugModel>(`${this.#articlesUrl}/${slug}/favorite`, '');
   }
 
   unfavoriteArticle(slug: string): Observable<ArticleSlugModel> {
-    return this._http.delete<ArticleSlugModel>(`${this.#articlesUrl}/${slug}/favorite`);
+    return this.#http.delete<ArticleSlugModel>(`${this.#articlesUrl}/${slug}/favorite`);
   }
 
   addComment(slug: string, comment: CommentPayloadModel): Observable<CommentModel> {
-    return this._http.post<CommentModel>(`${this.#articlesUrl}/${slug}/comments`, comment);
+    return this.#http.post<CommentModel>(`${this.#articlesUrl}/${slug}/comments`, comment);
   }
 
   deleteComment(slug: string, id: number): Observable<CommentModel> {
-    return this._http.delete<CommentModel>(`${this.#articlesUrl}/${slug}/comments/${id}`);
+    return this.#http.delete<CommentModel>(`${this.#articlesUrl}/${slug}/comments/${id}`);
+  }
+
+  createArticle(payload: CreateArticlePayloadModel): Observable<ArticleModel> {
+    return this.#http.post<ArticleModel>(`${this.#articlesUrl}`, payload);
   }
 }

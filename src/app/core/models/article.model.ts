@@ -44,3 +44,10 @@ export interface ArticlePayloadModel {
   author?: string;
   favorited?: boolean;
 }
+
+export interface CreateArticlePayloadModel {
+  title: string;
+  description: string;
+  body: string;
+  tagList: string[];
+}
