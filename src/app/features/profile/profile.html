@@ -4,20 +4,21 @@
     <div class="container">
       <div class="row">
         <div class="col-xs-12 col-md-10 offset-md-1">
-          <img src="http://i.imgur.com/Qr71crq.jpg" class="user-img" />
-          <h4>Eric Simons</h4>
+          <img [src]="vm.profile()?.image" class="user-img" />
+          <h4>{{ vm.profile()?.username }}</h4>
           <p>
-            Cofounder @GoThinkster, lived in Aol's HQ for a few months, kinda looks like Peeta from
-            the Hunger Games
+            {{ vm.profile()?.bio }}
           </p>
-          <button class="btn btn-sm btn-outline-secondary action-btn">
-            <i class="ion-plus-round"></i>
-            &nbsp; Follow Eric Simons
-          </button>
+          @if(vm.isUserProfile() ) {
           <button class="btn btn-sm btn-outline-secondary action-btn">
             <i class="ion-gear-a"></i>
             &nbsp; Edit Profile Settings
           </button>
+          }
+          <app-follow-button
+            [isFollowing]="vm.profile()?.following!"
+            [username]="vm.profile()?.username!"
+          ></app-follow-button>
         </div>
       </div>
     </div>
@@ -26,50 +27,22 @@
   <div class="container">
     <div class="row">
       <div class="col-xs-12 col-md-10 offset-md-1">
-        <div class="articles-toggle">
-          <ul class="nav nav-pills outline-active">
-            <li class="nav-item">
-              <a class="nav-link active" href="">My Articles</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="">Favorited Articles</a>
-            </li>
-          </ul>
-        </div>
-
-        @for(article of vm.articles(); track article){
-        <div class="article-preview">
-          <div class="article-meta">
-            <a [routerLink]="`/profile/${article.author.username}`"><img [src]="article.author.image" /></a>
-            <div class="info">
-              <a [routerLink]="`/profile/${article.author.username}`" class="author">Albert Pai</a>
-              <span class="date">{{ article.updatedAt | date }}</span>
-            </div>
-            <button class="btn btn-outline-primary btn-sm pull-xs-right">
-              <i class="ion-heart"></i> {{ article.favoritesCount }}
-            </button>
-          </div>
-          <a [routerLink]="`/article/${article.slug}`" class="preview-link">
-            <h1>{{ article.title }}</h1>
-            <p>{{ article.body }}</p>
-            <span>Read more...</span>
-            <ul class="tag-list">
-              @for(tag of article.tagList; track tag){
-              <li class="tag-default tag-pill tag-outline">{{ tag }}</li>
-              }
-            </ul>
-          </a>
-        </div>
-        }
-
-        <ul class="pagination">
-          <li class="page-item active">
-            <a class="page-link" href="">1</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="">2</a>
-          </li>
-        </ul>
+        <mat-tab-group [(selectedIndex)]="selectedTab">
+          <mat-tab label="My Articles">
+            @if(vm.articles().length) { @for(article of vm.articles(); track article){
+            <app-article [article]="article" />
+            } } @else {
+            <p>you don't have any articles yet ...</p>
+            }
+          </mat-tab>
+          <mat-tab label="Favorited Articles">
+            @if(vm.articles().length) { @for(article of vm.articles(); track article){
+            <app-article [article]="article" />
+            }}@else {
+            <p>you don't have any favorited articles yet ...</p>
+            }
+          </mat-tab>
+        </mat-tab-group>
       </div>
     </div>
   </div>

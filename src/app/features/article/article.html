@@ -5,13 +5,13 @@
       <h1>{{ vm.article()?.title }}</h1>
 
       <div class="article-meta">
-        <a href="/profile/eric-simons"><img [src]="vm.article()?.author?.image" /></a>
+        <a [routerLink]="`/profile/${vm.article()?.author?.username}`"><img [src]="vm.article()?.author?.image" /></a>
         <div class="info">
-          <a href="/profile/eric-simons" class="author">{{ vm.article()?.author?.username }}</a>
+          <a [routerLink]="`/profile/${vm.article()?.author?.username}`" class="author">{{ vm.article()?.author?.username }}</a>
           <span class="date">{{ vm.article()?.createdAt | date }}</span>
         </div>
         <button
-          class="btn btn-sm "
+          class="btn btn-sm"
           [class.btn-primary]="vm.article()?.author?.following"
           [class.btn-outline-primary]="!vm.article()?.author?.following"
           (click)="followUser(vm.article()?.author?.username!)"
@@ -67,13 +67,10 @@
           <span class="date">{{ vm.article()?.createdAt | date }}</span>
         </div>
 
-        <button class="btn btn-sm "  class="btn btn-sm "
-          [class.btn-primary]="vm.article()?.author?.following"
-          [class.btn-outline-secondary]="!vm.article()?.author?.following"
-          (click)="followUser(vm.article()?.author?.username!)">
-          <i class="ion-plus-round"></i>
-          &nbsp; Follow Eric Simons
-        </button>
+        <app-follow-button
+          [isFollowing]="vm.article()?.author?.following!"
+          [username]="vm.article()?.author?.username!"
+        ></app-follow-button>
         &nbsp; @if(userInfo() && vm.isUserArticle()) {
         <button class="btn btn-sm btn-outline-secondary">
           <i class="ion-edit"></i> Edit Article

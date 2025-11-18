@@ -25,24 +25,28 @@ import { AuthenticationStore } from '../../../authentication/authentication.stor
 
 import { Profiles } from '../../../core/services/profiles';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ProfileModel } from '../../../core/models/profile.model';
 
 interface ProfileStoreModel {
+  profile: ProfileModel | null;
   articles: ArticleSingleSlugModel[];
 }
 
 const initialState: ProfileStoreModel = {
+  profile: null,
   articles: [],
 };
 
 export const ProfileStore = signalStore(
   withState(initialState),
   withRequestState({ prefix: 'article' }),
-  withRouteParams(({ slug }) => ({ slug })),
+  withRequestState({ prefix: 'profile' }),
+  withRouteParams(({ username }) => ({ username })),
   withComputed((store, authenticationStore = inject(AuthenticationStore)) => ({
     vm: computed(() => ({
-      //   isUserArticle: computed(
-      //     () => store.articles()?.author?.username === authenticationStore.user()?.username
-      //   ),
+      isUserProfile: computed(
+        () => store.profile()?.username === authenticationStore.user()?.username
+      ),
 
       ...store,
     })),
@@ -55,13 +59,27 @@ export const ProfileStore = signalStore(
       matSnackbar = inject(MatSnackBar),
       authenticationStore = inject(AuthenticationStore)
     ) => ({
-      getArticles: rxMethod<void>(
+      getProfile: rxMethod<void>(
+        pipe(
+          tap(() => patchState(store, setPending('profile'))),
+          switchMap(() => {
+            return profiles.getUserProfile(store.username()).pipe(
+              tapResponse({
+                next: (user) =>
+                  patchState(store, { profile: user.profile }, setFulfilled('profile')),
+                error: (error: HttpErrorResponse) => patchState(store, setError('profile', error)),
+              })
+            );
+          })
+        )
+      ),
+      getArticles: rxMethod<number>(
         pipe(
           tap(() => patchState(store, setPending('article'))),
-          switchMap(() => {
-            const payload: ArticlePayloadModel = {
-              author: authenticationStore.user()?.username,
-            };
+          switchMap((activeTab: number) => {
+            const payload: ArticlePayloadModel =
+              activeTab === 0 ? { author: store.username() } : { favorited: store.username() };
+
             return articles.getArticles(payload).pipe(
               tapResponse({
                 next: (article) =>
@@ -152,7 +170,7 @@ export const ProfileStore = signalStore(
   ),
   withHooks({
     onInit(store) {
-      store.getArticles();
+      store.getProfile();
     },
   })
 );

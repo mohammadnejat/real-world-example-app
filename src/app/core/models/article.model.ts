@@ -42,7 +42,7 @@ export interface AuthorModel {
 export interface ArticlePayloadModel {
   tag?: string;
   author?: string;
-  favorited?: boolean;
+  favorited?: string;
 }
 
 export interface CreateArticlePayloadModel {

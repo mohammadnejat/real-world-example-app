@@ -7,10 +7,11 @@ import { AuthenticationStore } from '../../authentication/authentication.store';
 import { ArticleForm } from './article.form';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Profiles } from '../../core/services/profiles';
+import { FollowButton } from "../../shared/components/follow-button/follow-button";
 
 @Component({
   selector: 'app-article',
-  imports: [DatePipe, RouterLink,ReactiveFormsModule],
+  imports: [DatePipe, RouterLink, ReactiveFormsModule, FollowButton],
   providers: [ArticleStore, Articles,ArticleForm,Profiles],
   templateUrl: './article.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

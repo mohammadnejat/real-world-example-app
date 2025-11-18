@@ -1,0 +1,32 @@
+@if(article(); as article) {
+<div class="article-preview">
+  <div class="article-meta">
+    <a [routerLink]="`/profile/${article.author.username}`"><img [src]="article.author.image" /></a>
+    <div class="info">
+      <a [routerLink]="`/profile/${article.author.username}`" class="author">{{
+        article.author.username
+      }}</a>
+      <span class="date">{{ article.createdAt | date }}</span>
+    </div>
+    <button
+      class="btn pull-xs-right btn-sm"
+      [class.btn-primary]="article.favorited"
+      [class.btn-outline-primary]="!article.favorited"
+      (click)="favorite()"
+    >
+      <i class="ion-heart"></i> {{ article.favoritesCount }}
+    </button>
+  </div>
+  <a [routerLink]="`/article/${article.slug}`" class="preview-link">
+    <h1>{{ article.title }}</h1>
+    <p>{{ article.description }}</p>
+    <span>Read more...</span>
+    <ul class="tag-list">
+      @for (tag of article.tagList; track $index) {
+      <li class="tag-default tag-pill tag-outline">{{ tag }}</li>
+      }
+    </ul>
+  </a>
+</div>
+
+}
