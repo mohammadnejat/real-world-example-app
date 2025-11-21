@@ -17,25 +17,34 @@ import {
 import { computed, inject } from '@angular/core';
 import { Articles } from '../../../core/services/articles';
 import { tapResponse } from '@ngrx/operators';
-import { ArticleSingleSlugModel, ArticlesModel } from '../../../core/models/article.model';
+import {
+  ArticlePayloadModel,
+  ArticleSingleSlugModel,
+  ArticlesModel,
+} from '../../../core/models/article.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthenticationStore } from '../../../authentication/authentication.store';
-
 
 interface HomeStoreModel {
   articles: ArticleSingleSlugModel[];
   articlesCount: number;
+  tagsTab: string[];
+  tagsArticles: ArticleSingleSlugModel[];
+  selectedTabIndex: number;
 }
 
 const initialState: HomeStoreModel = {
   articles: [],
   articlesCount: 0,
+  tagsTab: [],
+  tagsArticles: [],
+  selectedTabIndex: 0,
 };
 
 export const HomeStore = signalStore(
   withState(initialState),
   withRequestState({ prefix: 'articles' }),
-  withComputed((store,authenticationStore = inject(AuthenticationStore)) => ({
+  withComputed((store, authenticationStore = inject(AuthenticationStore)) => ({
     vm: computed(() => ({
       popularTags: computed(() => {
         const tags = store
@@ -47,7 +56,9 @@ export const HomeStore = signalStore(
       }),
 
       myArticles: computed(() => {
-        return store.articles().filter((article) => article.author.username === authenticationStore.user()?.username);
+        return store
+          .articles()
+          .filter((article) => article.author.username === authenticationStore.user()?.username);
       }),
       ...store,
     })),
@@ -71,22 +82,17 @@ export const HomeStore = signalStore(
     ),
     favoriteArticle: rxMethod<string>(
       pipe(
-        tap(() => patchState(store, setPending('articles'))),
         switchMap((slug) =>
           articles.favoriteArticle(slug).pipe(
             tapResponse({
               next: (article) => {
-                patchState(
-                  store,
-                  {
-                    articles: store.articles().map((art) => {
-                      return art.slug === article.article.slug ? article.article : art;
-                    }),
-                  },
-                  setFulfilled('articles')
-                );
+                patchState(store, {
+                  articles: store.articles().map((art) => {
+                    return art.slug === article.article.slug ? article.article : art;
+                  }),
+                });
               },
-              error: (error: HttpErrorResponse) => setError('articles', error),
+              error: (error: HttpErrorResponse) => {},
             })
           )
         )
@@ -94,25 +100,43 @@ export const HomeStore = signalStore(
     ),
     unfavoriteArticle: rxMethod<string>(
       pipe(
-        tap(() => patchState(store, setPending('articles'))),
         switchMap((slug) =>
           articles.unfavoriteArticle(slug).pipe(
             tapResponse({
               next: (article) => {
+                patchState(store, {
+                  articles: store.articles().map((art) => {
+                    return art.slug === article.article.slug ? article.article : art;
+                  }),
+                });
+              },
+              error: (error: HttpErrorResponse) => {},
+            })
+          )
+        )
+      )
+    ),
+
+    searchTag: rxMethod<string>(
+      pipe(
+        tap(() => patchState(store, setPending('articles'))),
+        switchMap((tag) => {
+          const payload: ArticlePayloadModel = { tag, limit: 10, offset: 0 };
+          return articles.getArticles(payload).pipe(
+            tapResponse({
+              next: (article) => {
                 patchState(
                   store,
-                  {
-                    articles: store.articles().map((art) => {
-                      return art.slug === article.article.slug ? article.article : art;
-                    }),
+                  (store) => {
+                    return { ...store, tagsTab: [tag], tagsArticles: article.articles ,selectedTabIndex:2};
                   },
                   setFulfilled('articles')
                 );
               },
-              error: (error: HttpErrorResponse) => setError('articles', error),
+              error: (error: HttpErrorResponse) => {},
             })
-          )
-        )
+          );
+        })
       )
     ),
   })),

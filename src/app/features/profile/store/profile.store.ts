@@ -78,7 +78,9 @@ export const ProfileStore = signalStore(
           tap(() => patchState(store, setPending('article'))),
           switchMap((activeTab: number) => {
             const payload: ArticlePayloadModel =
-              activeTab === 0 ? { author: store.username() } : { favorited: store.username() };
+              activeTab === 0
+                ? { author: store.username(), limit: 10, offset: 0 }
+                : { favorited: store.username(), limit: 10, offset: 0 };
 
             return articles.getArticles(payload).pipe(
               tapResponse({

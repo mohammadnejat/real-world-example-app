@@ -19,11 +19,11 @@
       <li class="nav-item">
         <a
           class="nav-link"
-          routerLink="/profile/eric-simons"
-          routerLinkActive="/profile/eric-simons"
+          [routerLink]="`/profile/${vm.user()?.username}`"
+          [routerLinkActive]="`/profile/${vm.user()?.username}`"
         >
           <img src="" class="user-pic" />
-          Eric Simons
+         {{vm.user()?.username}}
         </a>
       </li>
     </ul>

@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AuthenticationStore } from '../../authentication/authentication.store';
 
 @Component({
   selector: 'app-setting',
@@ -6,4 +7,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   templateUrl: './setting.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class Setting {}
+export default class Setting {
+  readonly #authenticationStore = inject(AuthenticationStore);
+  logout() {
+    this.#authenticationStore.logout();
+  }
+}

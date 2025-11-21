@@ -11,10 +11,10 @@
     <span>Total articles: {{ vm.articlesCount() }}</span>
     <div class="row">
       <div class="col-md-9">
-        <mat-tab-group>
+        <mat-tab-group [selectedIndex]="vm.selectedTabIndex()">
           <mat-tab label="Global Feed">
             @if(vm.articlesPending()) {
-            <mat-spinner></mat-spinner>
+            <mat-spinner />
             }@else if (vm.articlesError()) {
             <h1>Error</h1>
             }@else if (vm.articlesFulfilled()) { @for (article of vm.articles()!; track $index) {
@@ -62,6 +62,17 @@
             <p>you don't have any articles yet ...</p>
             }
           </mat-tab>
+          @for (tag of vm.tagsTab(); track $index) {
+          <mat-tab [label]="tag">
+            @for (article of vm.tagsArticles(); track $index) {
+            <app-article
+              [article]="article"
+              (favoriteArticle)="favoriteArticle(article)"
+              (unFavoriteArticle)="unFavoriteArticle(article)"
+            />
+            }
+          </mat-tab>
+          }
         </mat-tab-group>
 
         <!-- <ul class="pagination">
@@ -80,7 +91,7 @@
 
           <div class="tag-list">
             @for (tag of vm.popularTags(); track $index) {
-            <a href="" class="tag-pill tag-default">{{ tag }}</a>
+            <a (click)="searchTag(tag)" class="tag-pill tag-default">{{ tag }}</a>
             }
           </div>
         </div>
